@@ -26,6 +26,9 @@ jobs:
       - name: Build
         run: dotnet build HelloWorld.sln --configuration Release --no-restore
 
+      - name: Test
+        run: dotnet test HelloWorld.sln --configuration Release --no-restore
+
       - name: Publish
         if: github.event_name == 'push'
         run: dotnet publish HelloWorld/HelloWorld.csproj --configuration Release --output artifacts/publish
