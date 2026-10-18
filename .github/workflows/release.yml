@@ -1,0 +1,38 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Restore
+        run: dotnet restore HelloWorld.sln
+
+      - name: Build
+        run: dotnet build HelloWorld.sln --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish HelloWorld/HelloWorld.csproj --configuration Release --output artifacts/publish
+
+      - name: Zip publish output
+        shell: pwsh
+        run: Compress-Archive -Path artifacts/publish/* -DestinationPath artifacts/HelloWorld.zip
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/HelloWorld.zip

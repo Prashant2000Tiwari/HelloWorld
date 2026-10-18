@@ -1,0 +1,38 @@
+name: CI/CD setup Hello Project
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Restore
+        run: dotnet restore HelloWorld.sln
+
+      - name: Build
+        run: dotnet build HelloWorld.sln --configuration Release --no-restore
+
+      - name: Publish
+        if: github.event_name == 'push'
+        run: dotnet publish HelloWorld/HelloWorld.csproj --configuration Release --output artifacts/publish
+
+      - name: Upload artifact
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: helloworld-publish
+          path: artifacts/publish
