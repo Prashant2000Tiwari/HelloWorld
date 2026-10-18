@@ -1,5 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using HelloWorld;
 
-var service = new GreetingService();
+GreetingService service = new GreetingService();
 Console.WriteLine(service.GetMessage());
